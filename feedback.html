@@ -1,0 +1,365 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piggy Bank with Features</title>
+    <link href="./output.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .container {
+            width: 600px; /* Desktop size width */
+        }
+
+        body {
+            background-image: url(money2.jpg); /* Set the background image here */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        body {
+            background-color: #f7fafc; /* White background */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
+            color: #333; /* Dark text color */
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center content horizontally */
+            justify-content: flex-start; /* Align items from the top */
+            min-height: 100vh;
+            margin: 0;
+            padding-top: 40px; /* Add some top padding */
+        }
+
+        .container {
+            background-color: #fff; /* White container background */
+            padding: 40px; /* More padding */
+            border-radius: 15px; /* More rounded corners */
+            width: 600px; /* Desktop size width */
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Softer shadow */
+            margin-bottom: 30px; /* Add some margin below the piggy bank */
+        }
+
+        h1 {
+            color: #007bff; /* Blue heading color */
+            margin-bottom: 30px;
+            font-size: 3em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Subtle text shadow */
+        }
+
+        .balance, .investments, .withdrawals {
+            margin-bottom: 25px;
+            padding: 18px;
+            border-radius: 10px;
+            background-color: #e9ecef; /* Light gray background for sections */
+        }
+
+        .balance h2 {
+            color: #28a745; /* Green for balance */
+            font-size: 2em;
+        }
+
+        .investments h2, .withdrawals h2 {
+            font-size: 1.4em;
+            color: #fd7e14; /* Orange for investments/withdrawals */
+        }
+
+        .deposit label, .withdraw-feedback-section label, .withdraw-direct-section label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .deposit input, .withdraw-feedback-section input, .withdraw-direct-section input {
+            width: calc(100% - 20px);
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            box-sizing: border-box;
+            color: #495057;
+            background-color: #fff;
+            font-size: 1.1em;
+        }
+
+        .deposit button, .withdraw-feedback-section button, .withdraw-direct-section button {
+            background-color: #28a745; /* Green for deposit */
+            color: white;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease; /* Smooth hover transition */
+        }
+
+        .withdraw-direct-section button {
+            background-color: #dc3545; /* Red for direct withdraw */
+        }
+
+        .withdraw-feedback-section button {
+            background-color: #007bff; /* Blue for withdraw with interest & feedback */
+        }
+
+        .deposit button:hover {
+            background-color: #218838;
+        }
+
+        .withdraw-direct-section button:hover {
+            background-color: #c82333;
+        }
+
+        .withdraw-feedback-section button:hover {
+            background-color: #0056b3;
+        }
+
+        .feedback-modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        .feedback-modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .feedback-form-group {
+            margin-bottom: 15px;
+        }
+
+        .feedback-form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .feedback-form-group textarea,
+        .feedback-form-group input[type="file"] {
+            width: calc(100% - 12px);
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .feedback-form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .feedback-actions button {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body class="bg-f7fafc flex flex-col items-center min-h-screen" style="font-size: large;" >
+
+    <div class="container">
+        <h1><b style="font-size: 50px;"> Piggy Bank</b></h1>
+        <div class="balance">   
+            <h2>Current Balance: <span id="balance">0.00</span></h2>
+        </div>
+        <div class="investments">
+            <h2>Total Deposits: <span id="totalDeposits">0.00</span></h2>
+        </div>
+        <div class="withdrawals">
+            <h2>Total Withdrawals: <span id="totalWithdrawals">0.00</span></h2>
+        </div>
+        <div class="deposit">
+            <label for="depositAmount">Enter amount to deposit:</label>
+            <input type="number" id="depositAmount" min="0.01" step="0.01" placeholder="Amount">
+            <button onclick="deposit()">Deposit</button>
+        </div>
+        <div class="withdraw-feedback-section">
+            <label for="withdrawInterestAmount">Enter amount to withdraw with interest & feedback:</label>
+            <input type="number" id="withdrawInterestAmount" min="0.01" step="0.01" placeholder="Amount">
+            <button onclick="openFeedbackModal()">Withdraw with Feedback</button>
+        </div>
+        <div class="withdraw-direct-section">
+            <label for="withdrawDirectAmount">Enter amount to withdraw directly:</label>
+            <input type="number" id="withdrawDirectAmount" min="0.01" step="0.01" placeholder="Amount">
+            <button onclick="withdrawDirect()">Withdraw</button>
+        </div>
+    </div>
+
+    <div id="feedbackModal" class="feedback-modal">
+        <div class="feedback-modal-content">
+            <span class="close-button" onclick="closeFeedbackModal()">&times;</span>
+            <h3>Provide Feedback</h3>
+            <div class="feedback-form-group">
+                <label for="feedbackText">Your Feedback:</label>
+                <textarea id="feedbackText" rows="4"></textarea>
+            </div>
+            <div class="feedback-form-group">
+                <label for="feedbackFile">Upload File (Optional):</label>
+                <input type="file" id="feedbackFile">
+            </div>
+            <div class="feedback-actions">
+                <button onclick="withdrawWithInterest()">Withdraw & Submit Feedback</button>
+                <button onclick="closeFeedbackModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let balance = 0;
+        let totalDeposits = 0;
+        let totalWithdrawals = 0;
+        let amountToWithdrawWithInterest = 0;
+
+        const balanceDisplay = document.getElementById('balance');
+        const totalDepositsDisplay = document.getElementById('totalDeposits');
+        const totalWithdrawalsDisplay = document.getElementById('totalWithdrawals');
+        const depositAmountInput = document.getElementById('depositAmount');
+        const withdrawDirectAmountInput = document.getElementById('withdrawDirectAmount');
+        const withdrawInterestAmountInput = document.getElementById('withdrawInterestAmount');
+        const feedbackModal = document.getElementById('feedbackModal');
+        const feedbackTextarea = document.getElementById('feedbackText');
+        const feedbackFileInput = document.getElementById('feedbackFile');
+
+        function updateDisplay() {
+            balanceDisplay.textContent = balance.toFixed(2);
+            totalDepositsDisplay.textContent = totalDeposits.toFixed(2);
+            totalWithdrawalsDisplay.textContent = totalWithdrawals.toFixed(2);
+        }
+
+        function deposit() {
+            const amount = parseFloat(depositAmountInput.value);
+            if (!isNaN(amount) && amount > 0) {
+                balance += amount;
+                totalDeposits += amount;
+                updateDisplay();
+                depositAmountInput.value = '';
+                alert(`You have deposited ₹${amount.toFixed(2)}`); // Alert on deposit
+            } else {
+                alert("Please enter a valid deposit amount.");
+            }
+        }
+
+        function withdrawDirect() {
+            const amount = parseFloat(withdrawDirectAmountInput.value);
+            if (!isNaN(amount) && amount > 0) {
+                if (amount <= balance) {
+                    balance -= amount;
+                    totalWithdrawals += amount;
+                    updateDisplay();
+                    withdrawDirectAmountInput.value = '';
+                    alert(`You have withdrawn ₹${amount.toFixed(2)} directly`); // Alert on direct withdrawal
+                } else {
+                    alert("Insufficient balance.");
+                }
+            } else {
+                alert("Please enter a valid withdrawal amount.");
+            }
+        }
+
+        function openFeedbackModal() {
+            const amount = parseFloat(withdrawInterestAmountInput.value);
+            if (!isNaN(amount) && amount > 0) {
+                if (amount <= balance) {
+                    amountToWithdrawWithInterest = amount;
+                    feedbackModal.style.display = "block";
+                } else {
+                    alert("Insufficient balance.");
+                }
+            } else {
+                alert("Please enter a valid withdrawal amount.");
+            }
+        }
+
+        function closeFeedbackModal() {
+            feedbackModal.style.display = "none";
+            withdrawInterestAmountInput.value = '';
+            amountToWithdrawWithInterest = 0;
+            feedbackTextarea.value = ''; // Clear feedback on cancel
+            feedbackFileInput.value = ''; // Clear file input on cancel
+        }
+
+        function calculateInterest(withdrawalAmount) {
+            if (withdrawalAmount <= 1000) {
+                return 0.05; // 5% interest
+            } else if (withdrawalAmount <= 10000) {
+                return 0.07; // 7% interest
+            } else {
+                return 0.10; // 10% interest
+            }
+        }
+
+        function withdrawWithInterest() {
+            if (amountToWithdrawWithInterest > 0) {
+                const interestRate = calculateInterest(amountToWithdrawWithInterest);
+                const interest = amountToWithdrawWithInterest * interestRate;
+                const totalWithdrawal = amountToWithdrawWithInterest + interest;
+                const feedback = feedbackTextarea.value;
+                const file = feedbackFileInput.files[0];
+
+                if (totalWithdrawal <= balance) {
+                    balance -= amountToWithdrawWithInterest; // Deduct the original amount
+                    totalWithdrawals += totalWithdrawal; // Update withdrawals with the total amount
+
+                    updateDisplay();
+                    closeFeedbackModal();
+                    withdrawInterestAmountInput.value = '';
+                    amountToWithdrawWithInterest = 0;
+
+                    let message = `Withdrawal successful!\nAmount: ₹${amountToWithdrawWithInterest.toFixed(2)}\nInterest (${(interestRate * 100).toFixed(0)}%): ₹${interest.toFixed(2)}\nTotal Withdrawn: ₹${totalWithdrawal.toFixed(2)}\nFeedback: ${feedback}`;
+                    if (file) {
+                        message += `\nFile Attached: ${file.name}`;
+                        console.log("File submitted:", file);
+                        // In a real application, you would need to handle file upload to a server.
+                    }
+                    alert(message); // Alert on withdrawal with interest
+
+                    // In a real application, you would likely send the feedback and file to a server.
+                    console.log("Feedback submitted:", feedback);
+                } else {
+                    alert("Insufficient balance after including interest.");
+                }
+            } else {
+                alert("No amount specified for withdrawal with interest.");
+            }
+        }
+
+        // Close modal if user clicks outside
+        window.onclick = function(event) {
+            if (event.target == feedbackModal) {
+                closeFeedbackModal();
+            }
+        }
+
+        updateDisplay(); // Initialize the display
+    </script>
+</body>
+</html>
